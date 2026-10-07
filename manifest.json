@@ -1,0 +1,12 @@
+{
+  "name": "Tu música en datos",
+  "short_name": "Mi música",
+  "description": "Estadísticas de lo que más escuchas en Spotify o Apple Music por día, mes y año.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#d6405a",
+  "theme_color": "#d6405a",
+  "lang": "es",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

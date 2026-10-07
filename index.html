@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tu música en datos — estadísticas de Spotify y Apple Music</title>
+<meta name="description" content="Tus artistas y canciones más escuchados por día, mes y año, tus listas, a qué horas escuchas más música y sugerencias para redescubrir canciones. Conecta Spotify o importa tu historial de Spotify o Apple Music.">
+<link rel="canonical" href="https://adrianezd.github.io/mi-musica/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d6405a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tu música en datos">
+<meta property="og:description" content="Lo que más escuchas por día, mes y año en Spotify o Apple Music.">
+<meta property="og:url" content="https://adrianezd.github.io/mi-musica/">
+<meta property="og:locale" content="es_ES">
+<link rel="stylesheet" href="style.css?v=1">
+<style>:root { --accent: #d6405a; }</style>
+<!-- seo -->
+<meta name="keywords" content="estadisticas spotify, spotify wrapped, lo mas escuchado spotify, apple music replay, top artistas spotify, historial spotify">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="adrianezd">
+<meta property="og:site_name" content="Tu música en datos">
+<meta property="og:image" content="https://adrianezd.github.io/mi-musica/favicon.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tu música en datos">
+<meta name="twitter:description" content="Tus artistas, canciones y listas más escuchados en Spotify o Apple Music por día, mes y año, a qué horas escuchas más y sugerencias para redescubrir canciones.">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Tu música en datos","url":"https://adrianezd.github.io/mi-musica/","description":"Tus artistas, canciones y listas más escuchados en Spotify o Apple Music por día, mes y año, a qué horas escuchas más y sugerencias para redescubrir canciones.","inLanguage":"es","applicationCategory":"MultimediaApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"adrianezd"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo veo lo que más escucho cada mes?","acceptedAnswer":{"@type":"Answer","text":"Descarga tu historial desde la privacidad de tu cuenta de Spotify o de Apple e impórtalo: verás el top de cada día, mes y año."}},{"@type":"Question","name":"¿Funciona con Apple Music?","acceptedAnswer":{"@type":"Answer","text":"Sí, importando los archivos de privacy.apple.com. La conexión directa solo está para Spotify."}},{"@type":"Question","name":"¿Mis datos se suben a algún sitio?","acceptedAnswer":{"@type":"Answer","text":"No. Todo se procesa en tu navegador y no se envía a ningún servidor."}}]}]}</script>
+<!-- /seo -->
+</head>
+<body>
+<header class="top">
+  <h1>🎧 Tu música en datos</h1>
+  <p class="sub">Lo que más escuchas por día, mes y año, en Spotify o Apple Music</p>
+</header>
+<main>
+  <p id="spEstado" class="texto estado"></p>
+
+  <!-- ===== Spotify conectado ===== -->
+  <section id="spDesconectado" class="tarjeta" hidden>
+    <h2>Conecta Spotify</h2>
+    <p class="texto">Verás tu top de artistas y canciones de las últimas 4 semanas, 6 meses y el último año, lo último que has escuchado y tus listas. Solo pedimos permiso para leer esos datos y para crear listas privadas si tú lo pides.</p>
+    <button class="boton" id="spConectar">Conectar con Spotify</button>
+  </section>
+
+  <div id="spConectado" hidden>
+    <section class="tarjeta">
+      <div class="cab-sp"><h2 id="spHola">Hola</h2><button class="mini" id="spSalir">Desconectar</button></div>
+      <div class="segmentos" role="tablist">
+        <button data-rango="short_term">4 semanas</button><button data-rango="medium_term">6 meses</button><button data-rango="long_term">1 año</button>
+      </div>
+    </section>
+    <div class="dos">
+      <section class="tarjeta"><h2>Tus artistas</h2><ol class="lista-img" id="spArtistas"></ol></section>
+      <section class="tarjeta"><h2>Tus canciones</h2><ol class="lista-img" id="spCanciones"></ol>
+        <button class="boton" id="spCrear">Crear lista con este top</button></section>
+    </div>
+    <section class="tarjeta" id="spGenerosCaja"><h2>Tus géneros</h2><ol class="lista-barras" id="spGeneros"></ol></section>
+    <section class="tarjeta"><h2>Sugerencias</h2><ul class="sugerencias" id="spSugerencias"></ul></section>
+    <div class="dos">
+      <section class="tarjeta"><h2>Lo último que has escuchado</h2><ol class="lista-img sin-num" id="spRecientes"></ol></section>
+      <section class="tarjeta"><h2>Desde dónde escuchas</h2><p class="texto">Listas y álbumes de tus últimas 50 canciones.</p><ol class="lista-img sin-num" id="spListasTop"></ol>
+        <h2 style="margin-top:16px">A qué hora</h2><div class="grafico bajo" id="spHoras" role="img" aria-label="Canciones por hora del día"></div></section>
+    </div>
+    <section class="tarjeta"><h2>Tus listas</h2><ol class="lista-img sin-num cols" id="spListas"></ol></section>
+  </div>
+
+  <!-- ===== Historial importado ===== -->
+  <section class="tarjeta" id="soltar">
+    <h2>Tu historial completo, día a día</h2>
+    <p class="texto">Spotify y Apple Music no dan el detalle por días ni por meses a otras webs, pero sí te lo dejan descargar. Importa esos archivos y lo verás todo aquí. No salen de tu navegador.</p>
+    <label class="boton subir">Importar archivos<input type="file" id="archivos" accept=".json,.csv,.zip" multiple hidden></label>
+    <details class="guia"><summary>Cómo descargar tu historial de Spotify</summary>
+      <ol>
+        <li>Entra en <a href="https://www.spotify.com/es/account/privacy/" target="_blank" rel="noopener">spotify.com › Cuenta › Privacidad</a>.</li>
+        <li>Marca <b>Historial de reproducción ampliado</b> (todos los años, tarda hasta 30 días) o <b>Datos de la cuenta</b> (el último año, tarda unos 5 días) y pide los datos.</li>
+        <li>Cuando te llegue el correo, descarga el .zip, descomprímelo e importa los archivos <code>Streaming_History_Audio_…json</code> o <code>StreamingHistory_music_…json</code>.</li>
+      </ol>
+    </details>
+    <details class="guia"><summary>Cómo descargar tu historial de Apple Music</summary>
+      <ol>
+        <li>Entra en <a href="https://privacy.apple.com/" target="_blank" rel="noopener">privacy.apple.com</a> con tu cuenta de Apple.</li>
+        <li>Elige <b>Solicitar una copia de tus datos</b> y marca <b>Actividad de los servicios multimedia de Apple</b>.</li>
+        <li>Cuando esté lista, descomprime los archivos e importa <code>Apple Music - Play History Daily Tracks.csv</code> o <code>Apple Music Play Activity.csv</code>.</li>
+      </ol>
+    </details>
+  </section>
+
+  <p id="hVacio" class="texto" hidden>Aún no has importado ningún historial.</p>
+  <div id="hDatos" hidden>
+    <section class="tarjeta form filtros">
+      <label>Año <select id="fAno"></select></label>
+      <label>Mes <select id="fMes"><option value="">Todo el año</option><option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option></select></label>
+    </section>
+    <p class="texto" id="hRango"></p>
+    <section class="cifras">
+      <div class="tarjeta"><div class="etq">Minutos</div><b id="hMin">–</b><span>escuchando música</span></div>
+      <div class="tarjeta"><div class="etq">Reproducciones</div><b id="hRep">–</b><span>de más de 30 s</span></div>
+      <div class="tarjeta"><div class="etq">Canciones</div><b id="hCan">–</b><span>distintas</span></div>
+      <div class="tarjeta"><div class="etq">Artistas</div><b id="hArt">–</b><span>distintos</span></div>
+    </section>
+    <section class="tarjeta"><h2 id="hTitulo">Minutos</h2><div class="grafico" id="hGrafico" role="img" aria-label="Minutos escuchados en el tiempo"></div></section>
+    <section class="tarjeta"><h2>Cuándo escuchas</h2><div class="mapa" id="hMapa" role="img" aria-label="Minutos por día de la semana y hora"></div><p class="texto" id="hPico"></p></section>
+    <div class="dos">
+      <section class="tarjeta"><h2>Artistas más escuchados</h2><ol class="lista-barras" id="hTopArt"></ol></section>
+      <section class="tarjeta"><h2>Canciones más escuchadas</h2><ol class="lista-barras" id="hTopCan"></ol></section>
+    </div>
+    <section class="tarjeta" id="hAlbCaja"><h2>Álbumes más escuchados</h2><ol class="lista-barras" id="hTopAlb"></ol></section>
+    <section class="tarjeta"><h2>Tu día récord</h2><p id="hRecord"></p></section>
+    <section class="tarjeta tabla-scroll"><h2>Lo más escuchado cada mes</h2>
+      <table><thead><tr><th>Mes</th><th class="n">Minutos</th><th>Artista</th><th>Canción</th></tr></thead><tbody id="hMeses"></tbody></table></section>
+    <section class="tarjeta"><h2>Sugerencias de tu historial</h2><ul class="sugerencias" id="hSugerencias"></ul></section>
+    <button class="mini" id="hBorrar">Borrar historial</button>
+  </div>
+
+  <details class="tarjeta guia" id="ajustes">
+    <summary>Ajustes de Spotify</summary>
+    <p class="texto">Para conectar con Spotify hace falta el Client ID de una app de Spotify. Crea una gratis en <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com</a>, marca <b>Web API</b> y añade esta dirección en <b>Redirect URIs</b>:</p>
+    <p><code id="redirect"></code></p>
+    <p class="texto">Mientras la app esté en modo desarrollo, solo podrán entrar las cuentas que añadas en <b>User Management</b>.</p>
+    <label>Client ID <input id="cid" autocomplete="off" spellcheck="false"></label>
+    <button class="boton" id="cidGuardar" style="margin-top:10px">Guardar</button>
+  </details>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<footer>Hecho por adrianezd. No es una web de Spotify ni de Apple. Tus datos se quedan en tu navegador.</footer>
+<!-- red -->
+<section class="seo-faq" style="max-width:760px;margin:0 auto;padding:8px 16px;font-size:.92rem;opacity:.85"><h2 style="font-size:1rem">Preguntas frecuentes</h2><details><summary>¿Cómo veo lo que más escucho cada mes?</summary><p>Descarga tu historial desde la privacidad de tu cuenta de Spotify o de Apple e impórtalo: verás el top de cada día, mes y año.</p></details><details><summary>¿Funciona con Apple Music?</summary><p>Sí, importando los archivos de privacy.apple.com. La conexión directa solo está para Spotify.</p></details><details><summary>¿Mis datos se suben a algún sitio?</summary><p>No. Todo se procesa en tu navegador y no se envía a ningún servidor.</p></details></section>
+<nav class="seo-red" style="max-width:760px;margin:0 auto;padding:8px 16px 28px;font-size:.85rem;opacity:.75;text-align:center">Más webs gratis: <a href="https://adrianezd.github.io/precio-luz-hoy/">Precio de la luz</a> · <a href="https://adrianezd.github.io/sueldo-neto/">Sueldo neto</a> · <a href="https://adrianezd.github.io/la-previa/">La Previa</a> · <a href="https://adrianezd.github.io/brisca-maldita/">Brisca Maldita</a> · <a href="https://adrianezd.github.io/embalses-hoy/">Embalses hoy</a> · <a href="https://adrianezd.github.io/calendario-laboral/">Calendario laboral</a> · <a href="https://adrianezd.github.io/alquilar-o-comprar/">Alquilar o comprar</a> · <a href="https://adrianezd.github.io/coste-viaje/">Coste del viaje</a> · <a href="https://adrianezd.github.io/pueblodle/">Pueblodle</a> · <a href="https://adrianezd.github.io/grid-laliga/">Grid LaLiga</a> · <a href="https://adrianezd.github.io/quien-lo-dijo/">Quién lo dijo</a> · <a href="https://adrianezd.github.io/el-mentiroso/">El Mentiroso</a> · <a href="https://adrianezd.github.io/tute/">Tute</a> · <a href="https://adrianezd.github.io/bar-de-pueblo/">Bar de Pueblo</a> · <a href="https://adrianezd.github.io/tiempo-de-pantalla/">Tiempo de pantalla</a> · <a href="https://adrianezd.github.io/mi-musica/">Tu música en datos</a></nav>
+<!-- /red -->
+<script src="script.js?v=1"></script>
+</body>
+</html>
